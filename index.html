@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone-like Calculator with Extra Features</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+        }
+        .calculator {
+            background-color: #111;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px #333;
+            width: 400px;
+            max-width: 100%;
+            position: relative;
+        }
+        .display {
+            background-color: #222;
+            color: #fff;
+            font-size: 3em;
+            text-align: right;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            height: 100px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+        }
+        .buttons button, .extra-features button {
+            width: 100%;
+            height: 60px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            color: #fff;
+            background-color: #333;
+            transition: background-color 0.3s;
+        }
+        .buttons button:active, .extra-features button:active {
+            background-color: #555;
+        }
+        .buttons button.orange {
+            background-color: #f60;
+        }
+        .buttons button.orange:active {
+            background-color: #f90;
+        }
+        .extra-features {
+            margin-top: 20px;
+        }
+        .zoom-buttons {
+            position: absolute;
+            top: -10px;
+            right: -50px;
+            display: flex;
+            flex-direction: column;
+        }
+        .zoom-buttons button {
+            margin-bottom: 10px;
+            width: 50px;
+            height: 50px;
+            background-color: #444;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+        .zoom-buttons button:active {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display" id="output">540</div>
+        <div class="buttons">
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="deleteLast()">←</button>
+            <button onclick="appendOperator('%')">%</button>
+            <button class="orange" onclick="appendOperator('÷')">÷</button>
+
+            <button onclick="appendNumber(7)">7</button>
+            <button onclick="appendNumber(8)">8</button>
+            <button onclick="appendNumber(9)">9</button>
+            <button class="orange" onclick="appendOperator('×')">×</button>
+
+            <button onclick="appendNumber(4)">4</button>
+            <button onclick="appendNumber(5)">5</button>
+            <button onclick="appendNumber(6)">6</button>
+            <button class="orange" onclick="appendOperator('-')">−</button>
+
+            <button onclick="appendNumber(1)">1</button>
+            <button onclick="appendNumber(2)">2</button>
+            <button onclick="appendNumber(3)">3</button>
+            <button class="orange" onclick="appendOperator('+')">+</button>
+
+            <button onclick="appendNumber(0)">0</button>
+            <button onclick="appendNumber('.')">.</button>
+            <button class="orange" onclick="calculate()">=</button>
+        </div>
+
+        <!-- Extra feature buttons -->
+        <div class="extra-features">
+            <button onclick="convert('temperature')">Temperature</button>
+            <button onclick="convert('mass')">Mass</button>
+            <button onclick="convert('area')">Area</button>
+            <button onclick="convert('length')">Length</button>
+        </div>
+
+        <!-- Zoom buttons for adjusting screen size -->
+        <div class="zoom-buttons">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+            <button onclick="resetZoom()">⤡</button>
+        </div>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+        let currentInput = '';
+        let calculator = document.querySelector('.calculator');
+        let zoomLevel = 1;
+
+        function appendNumber(number) {
+            currentInput += number;
+            updateDisplay();
+        }
+
+        function appendOperator(operator) {
+            currentInput += ` ${operator} `;
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            updateDisplay();
+        }
+
+        function deleteLast() {
+            currentInput = currentInput.slice(0, -1);
+            updateDisplay();
+        }
+
+        function calculate() {
+            try {
+                currentInput = eval(currentInput.replace('÷', '/').replace('×', '*')).toString();
+                updateDisplay();
+            } catch (e) {
+                currentInput = 'Error';
+                updateDisplay();
+            }
+        }
+
+        function updateDisplay() {
+            output.innerText = currentInput || '0';
+        }
+
+        function zoomIn() {
+            zoomLevel += 0.1;
+            updateZoom();
+        }
+
+        function zoomOut() {
+            zoomLevel = Math.max(0.5, zoomLevel - 0.1);
+            updateZoom();
+        }
+
+        function resetZoom() {
+            zoomLevel = 1;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            calculator.style.transform = `scale(${zoomLevel})`;
+        }
+
+        function convert(type) {
+            let value = parseFloat(prompt(`Enter value to convert (${type}):`));
+            if (isNaN(value)) {
+                alert('Invalid input!');
+                return;
+            }
+
+            let result;
+            switch (type) {
+                case 'temperature':
+                    result = `${value}°C = ${(value * 9/5) + 32}°F`;
+                    break;
+                case 'mass':
+                    result = `${value}kg = ${value * 2.20462}lb`;
+                    break;
+                case 'area':
+                    result = `${value}m² = ${(value * 10.7639).toFixed(2)}ft²`;
+                    break;
+                case 'length':
+                    result = `${value}m = ${value * 3.28084}ft`;
+                    break;
+                default:
+                    result = 'Unknown conversion type';
+            }
+            alert(result);
+        }
+    </script>
+</body>
+</html>
