@@ -21,7 +21,7 @@ The Calculator Application is designed to offer a comprehensive and user-friendl
 1. **Clone the Repository:**
 
    ```bash
-   git clone <repository-url>
+   git clone <https://namnijamni96.github.io/Advanced-calculate/>
    cd calculator-app
    npm install
    npm start
